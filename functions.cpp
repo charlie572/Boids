@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <random>
 
 float random_float(float lower_bound, float upper_bound) {
@@ -9,4 +10,8 @@ float random_float(float lower_bound, float upper_bound) {
 	result += lower_bound;
 
 	return result;
+}
+
+double degrees(double radians) {
+	return radians * 180 / M_PI;
 }
