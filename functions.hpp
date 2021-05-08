@@ -1,0 +1,1 @@
+float random_float(float lower_bound, float upper_bound);
