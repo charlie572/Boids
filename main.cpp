@@ -8,8 +8,8 @@ using namespace sf;
 int main() {
 	srand(time(0));
 
-	RenderWindow window(VideoMode(600, 600), "boids");
-	Game game(600.f, 600.f, 5);
+	RenderWindow window(VideoMode(960, 960), "boids");
+	Game game(960.f, 960.f, 30);
 
 	Event event;
 	Time dt;

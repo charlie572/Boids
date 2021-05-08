@@ -3,6 +3,11 @@
 #include <math.h>
 #include "functions.hpp"
 
+float Boid::WALL_AVOIDANCE = 250.f;
+float Boid::BOID_AVOIDANCE = 25.f;
+float Boid::VISION_RADIUS = 100.f;
+float Boid::VELOCITY_MATCHING = 50.f;
+float Boid::FLOCK_CENTERING = 25.f;
 
 Boid::Boid(Vector2f pos, Vector2f vel, float size, Color color) 
 	: shape(3), velocity(vel)
@@ -20,7 +25,10 @@ void Boid::draw(RenderWindow& window) {
 
 void Boid::update(Time dt) {
 	// move
-	shape.move(velocity * dt.asSeconds());
+	shape.move(velocity * dt.asSeconds() + 0.5f * acceleration * square(dt.asSeconds()));
+
+	// update velocity
+	velocity += acceleration * dt.asSeconds();
 
 	// turn towards velocity
 	double angle = atan(-velocity.x / velocity.y);
@@ -30,4 +38,46 @@ void Boid::update(Time dt) {
 	shape.setRotation(degrees(angle));
 }
 
+void Boid::avoid_walls(float width, float height) {
+	float x = get_position().x;
+	float y = get_position().y;
 
+	if (x <= VISION_RADIUS) {
+		acceleration.x += WALL_AVOIDANCE / x;
+	}
+	else if (x >= width - VISION_RADIUS) {
+		acceleration.x -= WALL_AVOIDANCE / (width - x);
+	}
+
+	if (y <= VISION_RADIUS) {
+		acceleration.y += WALL_AVOIDANCE / x;
+	}
+	else if (y >= height - VISION_RADIUS) {
+		acceleration.y -= WALL_AVOIDANCE / (height - y);
+	}
+}
+
+void Boid::interact(vector<Boid>& neighbours) {
+	if (neighbours.size() > 0) {
+		Vector2f mean_vel;
+		Vector2f mean_pos;
+		for (int i = 0; i < neighbours.size(); i++) {
+			// collision avoidance
+			acceleration -= (neighbours[i].get_position() - get_position()) * BOID_AVOIDANCE;
+
+			// total velocity and position
+			mean_pos += neighbours[i].get_position();
+			mean_vel += neighbours[i].get_velocity();
+		}
+
+		// calculate mean velocity and position
+		mean_pos *= 1.f / neighbours.size();
+		mean_vel *= 1.f / neighbours.size();
+
+		// velocity matching
+		acceleration += (mean_vel - velocity) * VELOCITY_MATCHING;
+
+		// flock centering
+		acceleration += (mean_pos - get_position()) * FLOCK_CENTERING;
+	}
+}
