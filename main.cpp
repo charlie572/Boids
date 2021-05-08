@@ -7,7 +7,7 @@ using namespace sf;
 
 int main() {
 	RenderWindow window(VideoMode(600, 600), "boids");
-	Game game(600.f, 600.f);
+	Game game(600.f, 600.f, 5);
 
 	Event event;
 	Time dt;
