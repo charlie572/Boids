@@ -26,3 +26,11 @@ float square(float x) {
 float get_magnitude_squared(Vector2f vec) {
 	return square(vec.x) + square(vec.y);
 }
+
+float get_angle(Vector2f vec) {
+	double angle = atan(-vec.x / vec.y);
+	if (vec.y < 0) {
+		angle = M_PI + angle;
+	}
+	return angle;
+}

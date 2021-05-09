@@ -20,6 +20,7 @@ public:
 	static float VISION_RADIUS;
 	static float VELOCITY_MATCHING;
 	static float FLOCK_CENTERING;
+	static float FOV;
 
 	Boid(Vector2f pos, Vector2f vel, float size, Color color = Color::White);
 	void draw(RenderWindow& window);
@@ -36,6 +37,7 @@ public:
 	void avoid_walls(float width, float height);
 	void interact(vector<Boid>& neighbours);
 	void wrap(float width, float height);
+	bool in_view(Boid& boid);
 };
 
 #endif

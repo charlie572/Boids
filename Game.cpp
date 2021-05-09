@@ -10,8 +10,8 @@ Game::Game(float width, float height, int num_boids)
 	for (int i = 0; i < num_boids; i++) {
 		position.x = random_float(0.f, width);
 		position.y = random_float(0.f, height);
-		velocity.x = random_float(-150.f, 150.f);
-		velocity.y = random_float(-150.f, 150.f);
+		velocity.x = random_float(-500.f, 500.f);
+		velocity.y = random_float(-500.f, 500.f);
 		boids.push_back(Boid(position, velocity, 10.f));
 	}
 }
@@ -29,8 +29,7 @@ void Game::update(Time dt) {
 		vector<Boid> neighbours;
 		for (int j = 0; j < boids.size(); j++) {
 			if (j != i) {
-				float distance_squared = get_magnitude_squared(boids[i].get_position() - boids[j].get_position());
-				if (distance_squared < square(Boid::VISION_RADIUS)) {
+				if (boids[i].in_view(boids[j])) {
 					neighbours.push_back(boids[j]);
 				}
 			}

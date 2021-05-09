@@ -6,8 +6,9 @@
 float Boid::WALL_AVOIDANCE = 500.f;
 float Boid::BOID_AVOIDANCE = 25.f;
 float Boid::VISION_RADIUS = 100.f;
-float Boid::VELOCITY_MATCHING = 5.f;
-float Boid::FLOCK_CENTERING = 0.f;
+float Boid::VELOCITY_MATCHING = 10.f;
+float Boid::FLOCK_CENTERING = 60.f;
+float Boid::FOV = M_PI;
 
 Boid::Boid(Vector2f pos, Vector2f vel, float size, Color color) 
 	: shape(3), velocity(vel)
@@ -31,11 +32,7 @@ void Boid::update(Time dt) {
 	velocity += acceleration * dt.asSeconds();
 
 	// turn towards velocity
-	double angle = atan(-velocity.x / velocity.y);
-	if (velocity.y < 0) {
-		angle = M_PI + angle;
-	}
-	shape.setRotation(degrees(angle));
+	shape.setRotation(degrees(get_angle(velocity)));
 }
 
 void Boid::avoid_walls(float width, float height) {
@@ -88,4 +85,17 @@ void Boid::wrap(float width, float height) {
 
 	if (get_position().y < 0) shape.move(0.f, height);
 	else if (get_position().y > height) shape.move(0.f, -height);
+}
+
+bool Boid::in_view(Boid& boid) {
+	float angle = get_angle(velocity) - get_angle(boid.get_position() - get_position());
+	while (angle < 0) angle += M_PI;
+	while (angle > M_PI) angle -= M_PI;
+
+	if (angle <= FOV / 2) {
+		float distance_squared = get_magnitude_squared(boid.get_position() - get_position());
+		return distance_squared < square(Boid::VISION_RADIUS);
+	}
+
+	return false;
 }
