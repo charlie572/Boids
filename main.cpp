@@ -9,7 +9,7 @@ int main() {
 	srand(time(0));
 
 	RenderWindow window(VideoMode(960, 960), "boids");
-	Game game(960.f, 960.f, 30);
+	Game game(960.f, 960.f, 50);
 
 	Event event;
 	Time dt;

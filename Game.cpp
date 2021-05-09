@@ -41,7 +41,8 @@ void Game::update(Time dt) {
 	}
 
 	for (int i = 0; i < boids.size(); i++) {
-		boids[i].avoid_walls(WIDTH, HEIGHT);
+		// boids[i].avoid_walls(WIDTH, HEIGHT);
 		boids[i].update(dt);
+		boids[i].wrap(WIDTH, HEIGHT);
 	}
 }

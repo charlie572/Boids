@@ -35,6 +35,7 @@ public:
 		}
 	void avoid_walls(float width, float height);
 	void interact(vector<Boid>& neighbours);
+	void wrap(float width, float height);
 };
 
 #endif

@@ -3,11 +3,11 @@
 #include <math.h>
 #include "functions.hpp"
 
-float Boid::WALL_AVOIDANCE = 250.f;
+float Boid::WALL_AVOIDANCE = 500.f;
 float Boid::BOID_AVOIDANCE = 25.f;
 float Boid::VISION_RADIUS = 100.f;
-float Boid::VELOCITY_MATCHING = 50.f;
-float Boid::FLOCK_CENTERING = 25.f;
+float Boid::VELOCITY_MATCHING = 5.f;
+float Boid::FLOCK_CENTERING = 0.f;
 
 Boid::Boid(Vector2f pos, Vector2f vel, float size, Color color) 
 	: shape(3), velocity(vel)
@@ -80,4 +80,12 @@ void Boid::interact(vector<Boid>& neighbours) {
 		// flock centering
 		acceleration += (mean_pos - get_position()) * FLOCK_CENTERING;
 	}
+}
+
+void Boid::wrap(float width, float height) {
+	if (get_position().x < 0) shape.move(width, 0.f);
+	else if (get_position().x > width) shape.move(-width, 0.f);
+
+	if (get_position().y < 0) shape.move(0.f, height);
+	else if (get_position().y > height) shape.move(0.f, -height);
 }
