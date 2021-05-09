@@ -21,6 +21,8 @@ public:
 	static float VELOCITY_MATCHING;
 	static float FLOCK_CENTERING;
 	static float FOV;
+	static float MAX_SPEED;
+	static float MAX_SPEED_SQUARED;
 
 	Boid(Vector2f pos, Vector2f vel, float size, Color color = Color::White);
 	void draw(RenderWindow& window);

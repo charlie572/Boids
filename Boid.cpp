@@ -4,11 +4,13 @@
 #include "functions.hpp"
 
 float Boid::WALL_AVOIDANCE = 750.f;
-float Boid::BOID_AVOIDANCE = 350.f;
-float Boid::VISION_RADIUS = 50.f;
-float Boid::VELOCITY_MATCHING = 250.f;
-float Boid::FLOCK_CENTERING = 400.f;
+float Boid::BOID_AVOIDANCE = 4000.f;
+float Boid::VISION_RADIUS = 150.f;
+float Boid::VELOCITY_MATCHING = 5.f;
+float Boid::FLOCK_CENTERING = 5.f;
 float Boid::FOV = M_PI * 0.75;
+float Boid::MAX_SPEED = 300.f;
+float Boid::MAX_SPEED_SQUARED = square(Boid::MAX_SPEED);
 
 Boid::Boid(Vector2f pos, Vector2f vel, float size, Color color) 
 	: shape(3), velocity(vel)
@@ -30,6 +32,14 @@ void Boid::update(Time dt) {
 
 	// update velocity
 	velocity += acceleration * dt.asSeconds();
+
+	// limit speed
+	float magnitude_squared = get_magnitude_squared(velocity);
+	if (magnitude_squared > MAX_SPEED_SQUARED) {
+		float magnitude = sqrt(magnitude_squared);
+		velocity.x *= MAX_SPEED / magnitude;
+		velocity.y *= MAX_SPEED / magnitude;
+	}
 
 	// turn towards velocity
 	shape.setRotation(degrees(get_angle(velocity)));
@@ -56,26 +66,26 @@ void Boid::avoid_walls(float width, float height) {
 
 void Boid::interact(vector<Boid>& neighbours) {
 	if (neighbours.size() > 0) {
-		Vector2f mean_vel;
+		Vector2f total_vel;
 		Vector2f mean_pos;
 		for (int i = 0; i < neighbours.size(); i++) {
 			// collision avoidance
-			acceleration -= normalise(neighbours[i].get_position() - get_position()) * BOID_AVOIDANCE;
+			Vector2f heading = neighbours[i].get_position() - get_position();
+			acceleration -= heading * (BOID_AVOIDANCE / get_magnitude_squared(heading));
 
 			// total velocity and position
 			mean_pos += neighbours[i].get_position();
-			mean_vel += neighbours[i].get_velocity();
+			total_vel += neighbours[i].get_velocity();
 		}
 
-		// calculate mean velocity and position
+		// calculate mean velocity
 		mean_pos *= 1.f / neighbours.size();
-		mean_vel *= 1.f / neighbours.size();
 
 		// velocity matching
-		acceleration += normalise(mean_vel - velocity) * VELOCITY_MATCHING;
+		acceleration += normalise(total_vel - velocity) * VELOCITY_MATCHING;
 
 		// flock centering
-		acceleration += normalise(mean_pos - get_position()) * FLOCK_CENTERING;
+		acceleration += (mean_pos - get_position()) * FLOCK_CENTERING;
 	}
 }
 
@@ -88,8 +98,8 @@ void Boid::wrap(float width, float height) {
 }
 
 bool Boid::in_view(Boid& boid) {
-	float angle = get_angle(velocity) - get_angle(boid.get_position() - get_position());
-	while (angle < 0) angle += M_PI;
+	float angle = get_angle(boid.get_position() - get_position()) - get_angle(velocity);
+	while (angle < 0) angle *= -1;
 	while (angle > M_PI) angle -= M_PI;
 
 	if (angle <= FOV / 2) {
