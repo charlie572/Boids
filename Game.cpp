@@ -23,7 +23,7 @@ void Game::draw(RenderWindow& window) {
 }
 
 void Game::update(Time dt) {
-	for (int i = 0; i < boids.size() - 1; i++) {
+	for (int i = 0; i < boids.size(); i++) {
 		boids[i].reset_acceleration();
 
 		vector<Boid> neighbours;

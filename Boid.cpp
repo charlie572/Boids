@@ -3,12 +3,12 @@
 #include <math.h>
 #include "functions.hpp"
 
-float Boid::WALL_AVOIDANCE = 500.f;
-float Boid::BOID_AVOIDANCE = 25.f;
-float Boid::VISION_RADIUS = 100.f;
-float Boid::VELOCITY_MATCHING = 10.f;
-float Boid::FLOCK_CENTERING = 60.f;
-float Boid::FOV = M_PI;
+float Boid::WALL_AVOIDANCE = 750.f;
+float Boid::BOID_AVOIDANCE = 350.f;
+float Boid::VISION_RADIUS = 50.f;
+float Boid::VELOCITY_MATCHING = 250.f;
+float Boid::FLOCK_CENTERING = 400.f;
+float Boid::FOV = M_PI * 0.75;
 
 Boid::Boid(Vector2f pos, Vector2f vel, float size, Color color) 
 	: shape(3), velocity(vel)
@@ -60,7 +60,7 @@ void Boid::interact(vector<Boid>& neighbours) {
 		Vector2f mean_pos;
 		for (int i = 0; i < neighbours.size(); i++) {
 			// collision avoidance
-			acceleration -= (neighbours[i].get_position() - get_position()) * BOID_AVOIDANCE;
+			acceleration -= normalise(neighbours[i].get_position() - get_position()) * BOID_AVOIDANCE;
 
 			// total velocity and position
 			mean_pos += neighbours[i].get_position();
@@ -72,10 +72,10 @@ void Boid::interact(vector<Boid>& neighbours) {
 		mean_vel *= 1.f / neighbours.size();
 
 		// velocity matching
-		acceleration += (mean_vel - velocity) * VELOCITY_MATCHING;
+		acceleration += normalise(mean_vel - velocity) * VELOCITY_MATCHING;
 
 		// flock centering
-		acceleration += (mean_pos - get_position()) * FLOCK_CENTERING;
+		acceleration += normalise(mean_pos - get_position()) * FLOCK_CENTERING;
 	}
 }
 

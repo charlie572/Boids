@@ -27,10 +27,18 @@ float get_magnitude_squared(Vector2f vec) {
 	return square(vec.x) + square(vec.y);
 }
 
+float get_magnitude(Vector2f vec) {
+	return sqrt(get_magnitude_squared(vec));
+}
+
 float get_angle(Vector2f vec) {
 	double angle = atan(-vec.x / vec.y);
 	if (vec.y < 0) {
 		angle = M_PI + angle;
 	}
 	return angle;
+}
+
+Vector2f normalise(Vector2f vec) {
+	return 1 / get_magnitude(vec) * vec;
 }
